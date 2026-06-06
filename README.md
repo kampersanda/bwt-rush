@@ -6,6 +6,8 @@ Each displayed token is a Burrows-Wheeler transformed string. The player must re
 
 The prototype also supports category-based runs such as stringology terms, NLP venues, IR venues, and genomics vocabulary.
 
+This prototype was developed with assistance from OpenAI Codex.
+
 ## Development
 
 ```bash
