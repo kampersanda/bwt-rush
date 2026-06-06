@@ -1,0 +1,234 @@
+:root {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  color: #f5f7ff;
+  background:
+    radial-gradient(circle at top, rgba(84, 130, 255, 0.35), transparent 36%),
+    linear-gradient(160deg, #09111f 0%, #10233f 42%, #1f2843 100%);
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.shell {
+  width: min(1080px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.hero {
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8bc5ff;
+  font-size: 0.78rem;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  line-height: 0.95;
+}
+
+.lede {
+  width: min(40rem, 100%);
+  margin: 12px 0 0;
+  color: #d3def8;
+}
+
+.panel {
+  border: 1px solid rgba(167, 198, 255, 0.2);
+  border-radius: 24px;
+  background: rgba(8, 16, 31, 0.72);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.hud {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.metric {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(133, 181, 255, 0.08);
+}
+
+.label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #99b7ea;
+  margin-bottom: 6px;
+}
+
+.metric strong {
+  font-size: 1.6rem;
+}
+
+.game-panel {
+  padding: 18px;
+}
+
+.game-area {
+  position: relative;
+  overflow: hidden;
+  min-height: 356px;
+  border-radius: 20px;
+  border: 1px solid rgba(149, 194, 255, 0.18);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(18, 46, 90, 0.92), rgba(12, 24, 44, 0.95));
+  background-size: 100% 54px, 72px 100%, 100% 100%;
+}
+
+.game-area::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 140px;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, rgba(255, 95, 95, 0.85), transparent);
+}
+
+.word {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(248, 250, 255, 0.1);
+  border: 1px solid rgba(208, 225, 255, 0.28);
+  color: #f4f8ff;
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.word.active {
+  border-color: rgba(255, 232, 129, 0.82);
+  box-shadow: 0 0 0 3px rgba(255, 232, 129, 0.15);
+}
+
+.word.danger {
+  border-color: rgba(255, 109, 109, 0.75);
+}
+
+.typed {
+  color: #6de3bf;
+}
+
+.input-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.input-bar label {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  color: #97b4df;
+}
+
+.input-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(164, 204, 255, 0.22);
+  background: rgba(2, 7, 18, 0.55);
+  color: inherit;
+}
+
+.input-bar input:focus {
+  outline: 2px solid rgba(111, 205, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.status-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.status-text {
+  margin: 0;
+  color: #c5d7f4;
+}
+
+.action-button {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #92f7d4, #7eb6ff);
+  color: #08111f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tips {
+  margin-top: 18px;
+  padding: 18px;
+  color: #c3d3ef;
+}
+
+.tips p {
+  margin: 0;
+}
+
+.tips p + p {
+  margin-top: 8px;
+}
+
+@media (max-width: 720px) {
+  .shell {
+    width: min(100vw - 20px, 1080px);
+    padding-top: 20px;
+  }
+
+  .hud {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .game-area {
+    min-height: 420px;
+  }
+
+  .status-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+}
