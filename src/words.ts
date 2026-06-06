@@ -1,4 +1,11 @@
-export const WORD_BANK = [
+export type WordEntry = {
+  text: string;
+  source: string;
+  bwt: string;
+  difficulty: number;
+};
+
+const RAW_WORDS = [
   "amber",
   "arrow",
   "atlas",
@@ -58,3 +65,26 @@ export const WORD_BANK = [
   "window",
   "zenith",
 ];
+
+export const WORD_BANK: WordEntry[] = RAW_WORDS.map((text) => {
+  const source = `${text}$`;
+  return {
+    text,
+    source,
+    bwt: burrowsWheelerTransform(source),
+    difficulty: scoreDifficulty(text),
+  };
+});
+
+function burrowsWheelerTransform(source: string) {
+  const rotations = Array.from({ length: source.length }, (_, index) => {
+    return source.slice(index) + source.slice(0, index);
+  }).sort();
+
+  return rotations.map((rotation) => rotation[rotation.length - 1] ?? "").join("");
+}
+
+function scoreDifficulty(text: string) {
+  const distinctChars = new Set(text).size;
+  return text.length + Math.max(0, text.length - distinctChars);
+}

@@ -1,6 +1,8 @@
 # bwt-rush
 
-A browser typing game prototype built with Vite and TypeScript.
+A browser game prototype for string processing fans, built with Vite and TypeScript.
+
+Each displayed token is a source string ending in `$`. The player must type its Burrows-Wheeler transform, not the source string itself.
 
 ## Development
 

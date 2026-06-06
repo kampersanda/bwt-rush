@@ -5,7 +5,9 @@ type Screen = "title" | "playing" | "gameover";
 
 type WordEntity = {
   id: number;
-  text: string;
+  prompt: string;
+  answer: string;
+  difficulty: number;
   typedIndex: number;
   x: number;
   y: number;
@@ -29,10 +31,10 @@ if (!app) {
 app.innerHTML = `
   <main class="shell">
     <header class="hero">
-      <p class="eyebrow">Typing Survival Prototype</p>
+      <p class="eyebrow">String Processing Arcade</p>
       <h1>BWT Rush</h1>
       <p class="lede">
-        Lock onto a word, finish it before it escapes, and keep the lane clean.
+        Each token is a source string ending in $. Type its Burrows-Wheeler transform before it escapes.
       </p>
     </header>
 
@@ -47,7 +49,7 @@ app.innerHTML = `
       </div>
       <div class="metric">
         <span class="label">Lives</span>
-        <strong id="lives">5</strong>
+        <strong id="lives">6</strong>
       </div>
       <div class="metric">
         <span class="label">Intensity</span>
@@ -58,27 +60,27 @@ app.innerHTML = `
     <section class="panel game-panel">
       <div id="gameArea" class="game-area" aria-label="Game field"></div>
       <div class="input-bar">
-        <label for="typingInput">Input</label>
+        <label for="typingInput">BWT</label>
         <input
           id="typingInput"
           type="text"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
-          placeholder="Start typing to lock a word"
+          placeholder="Type the BWT result, including $"
         />
       </div>
       <div class="status-row">
         <p id="statusText" class="status-text">
-          Press Start and keep your hands on the keyboard.
+          Press Start. Visible strings are prompts, but your input must be their BWT outputs.
         </p>
         <button id="startButton" class="action-button">Start run</button>
       </div>
     </section>
 
     <section class="panel tips">
-      <p>Rules: the first correct keystroke locks a word. Missed words cost one life.</p>
-      <p>Tip: target the word closest to the exit when several share the same first letter.</p>
+      <p>Rule: the first correct keystroke locks a prompt whose BWT starts with that prefix.</p>
+      <p>Reminder: every displayed string already includes the terminal symbol $.</p>
     </section>
   </main>
 `;
@@ -108,7 +110,7 @@ class TypingGame {
   private stats: Stats = {
     score: 0,
     combo: 0,
-    lives: 5,
+    lives: 6,
     elapsedMs: 0,
   };
   private entities: WordEntity[] = [];
@@ -140,7 +142,7 @@ class TypingGame {
   start() {
     this.restartState();
     this.screen = "playing";
-    this.setStatus("Survive as long as you can.");
+    this.setStatus("Compute BWTs quickly and keep the lane clean.");
     startButtonEl.textContent = "Restart run";
     this.input.disabled = false;
     this.input.focus();
@@ -159,12 +161,12 @@ class TypingGame {
     this.stats = {
       score: 0,
       combo: 0,
-      lives: 5,
+      lives: 6,
       elapsedMs: 0,
     };
     this.entities = [];
     this.activeWordId = null;
-    this.nextSpawnMs = 800;
+    this.nextSpawnMs = 1400;
     this.spawnCount = 0;
     this.entityId = 0;
     this.input.value = "";
@@ -198,28 +200,30 @@ class TypingGame {
   }
 
   private spawnWord() {
-    const text = this.pickWord();
+    const entry = this.pickWord();
     const intensity = this.currentIntensity();
     const entity: WordEntity = {
       id: this.entityId++,
-      text,
+      prompt: entry.source,
+      answer: entry.bwt,
+      difficulty: entry.difficulty,
       typedIndex: 0,
-      x: -120,
-      y: 24 + (this.spawnCount % 6) * 54,
-      speed: 70 + intensity * 22 + Math.random() * 25,
-      width: estimateWordWidth(text),
+      x: -180,
+      y: 24 + (this.spawnCount % 5) * 62,
+      speed: 44 + intensity * 11 + Math.random() * 10,
+      width: estimateWordWidth(entry.source),
     };
 
     this.spawnCount += 1;
     this.entities.push(entity);
-    if (this.entities.length > 12) {
+    if (this.entities.length > 8) {
       this.entities.sort((a, b) => b.x - a.x);
     }
   }
 
   private advanceWords(deltaMs: number) {
     const deltaSec = deltaMs / 1000;
-    const boundary = this.area.clientWidth + 80;
+    const boundary = this.area.clientWidth + 90;
     const survivors: WordEntity[] = [];
 
     for (const entity of this.entities) {
@@ -232,7 +236,7 @@ class TypingGame {
         }
         this.stats.lives -= 1;
         this.stats.combo = 0;
-        this.setStatus(`Missed "${entity.text}".`);
+        this.setStatus(`Missed ${entity.prompt}. Its BWT was ${entity.answer}.`);
         continue;
       }
 
@@ -248,7 +252,8 @@ class TypingGame {
     for (const entity of this.entities) {
       const wordEl = document.createElement("div");
       const isActive = entity.id === this.activeWordId;
-      const isDanger = entity.x + entity.width > this.area.clientWidth - 170;
+      const isDanger = entity.x + entity.width > this.area.clientWidth - 190;
+      const progress = `${entity.typedIndex}/${entity.answer.length}`;
 
       wordEl.className = "word";
       if (isActive) {
@@ -260,9 +265,12 @@ class TypingGame {
 
       wordEl.style.transform = `translate(${entity.x}px, ${entity.y}px)`;
 
-      const typed = entity.text.slice(0, entity.typedIndex);
-      const rest = entity.text.slice(entity.typedIndex);
-      wordEl.innerHTML = `<span class="typed">${escapeHtml(typed)}</span><span>${escapeHtml(rest)}</span>`;
+      const prompt = `<span class="prompt">${escapeHtml(entity.prompt)}</span>`;
+      const meta = isActive
+        ? `<span class="meta">BWT progress ${progress}</span>`
+        : `<span class="meta">Type BWT(${escapeHtml(entity.prompt)})</span>`;
+
+      wordEl.innerHTML = `${prompt}${meta}`;
       this.area.appendChild(wordEl);
     }
   }
@@ -289,15 +297,15 @@ class TypingGame {
     if (!active) {
       active = this.acquireTarget(typed);
       if (!active) {
-        this.status.textContent = "No visible word matches that prefix.";
+        this.status.textContent = "No visible prompt has a BWT with that prefix.";
         return;
       }
       this.activeWordId = active.id;
     }
 
-    if (!active.text.startsWith(typed)) {
+    if (!active.answer.startsWith(typed)) {
       this.stats.combo = 0;
-      this.setStatus(`Broken lock on "${active.text}".`);
+      this.setStatus(`Broken lock on ${active.prompt}.`);
       this.input.value = "";
       active.typedIndex = 0;
       this.activeWordId = null;
@@ -308,18 +316,18 @@ class TypingGame {
 
     active.typedIndex = typed.length;
 
-    if (typed === active.text) {
+    if (typed === active.answer) {
       this.completeWord(active.id);
       return;
     }
 
-    this.setStatus(`Locked on "${active.text}".`);
+    this.setStatus(`Locked on ${active.prompt}.`);
     this.renderWords();
   }
 
   private acquireTarget(prefix: string) {
     const candidates = this.entities
-      .filter((entity) => entity.text.startsWith(prefix))
+      .filter((entity) => entity.answer.startsWith(prefix))
       .sort((a, b) => b.x - a.x);
     return candidates[0];
   }
@@ -330,13 +338,13 @@ class TypingGame {
       return;
     }
 
-    const bonus = 10 + entity.text.length * 3 + this.stats.combo * 2;
+    const bonus = 18 + entity.answer.length * 5 + entity.difficulty * 3 + this.stats.combo * 4;
     this.stats.score += bonus;
     this.stats.combo += 1;
     this.activeWordId = null;
     this.input.value = "";
     this.entities = this.entities.filter((item) => item.id !== id);
-    this.setStatus(`Cleared "${entity.text}" for ${bonus} points.`);
+    this.setStatus(`Cleared ${entity.prompt} -> ${entity.answer} for ${bonus} points.`);
     this.renderHud();
     this.renderWords();
   }
@@ -352,17 +360,17 @@ class TypingGame {
   }
 
   private currentIntensity() {
-    return 1 + this.stats.elapsedMs / 30000;
+    return 1 + this.stats.elapsedMs / 45000;
   }
 
   private spawnDelay() {
-    return Math.max(450, 1150 - this.currentIntensity() * 140);
+    return Math.max(1050, 1950 - this.currentIntensity() * 120);
   }
 
   private pickWord() {
     const intensity = this.currentIntensity();
-    const maxLength = intensity < 1.8 ? 5 : intensity < 2.6 ? 7 : 9;
-    const candidates = this.words.filter((word) => word.length <= maxLength);
+    const maxDifficulty = intensity < 1.7 ? 5 : intensity < 2.4 ? 7 : 10;
+    const candidates = this.words.filter((word) => word.difficulty <= maxDifficulty);
     return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
@@ -394,7 +402,7 @@ function requiredById<T extends HTMLElement = HTMLElement>(id: string): T {
 }
 
 function estimateWordWidth(text: string) {
-  return 28 + text.length * 18;
+  return 54 + text.length * 20;
 }
 
 function escapeHtml(text: string) {

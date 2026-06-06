@@ -117,17 +117,32 @@ input {
 
 .word {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   left: 0;
   top: 0;
-  padding: 8px 14px;
-  border-radius: 999px;
+  padding: 10px 14px 11px;
+  border-radius: 18px;
   background: rgba(248, 250, 255, 0.1);
   border: 1px solid rgba(208, 225, 255, 0.28);
   color: #f4f8ff;
-  font-size: 1.35rem;
-  letter-spacing: 0.04em;
+  font-size: 1.15rem;
+  letter-spacing: 0.03em;
   white-space: nowrap;
   transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.prompt {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.meta {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a6c3ee;
 }
 
 .word.active {
