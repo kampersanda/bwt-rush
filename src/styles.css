@@ -69,6 +69,39 @@ input {
   margin-bottom: 18px;
 }
 
+.controls-panel {
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.category-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.category-bar label {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  color: #97b4df;
+}
+
+.category-bar select {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(164, 204, 255, 0.22);
+  background: rgba(2, 7, 18, 0.7);
+  color: inherit;
+}
+
+.category-hint {
+  margin: 12px 0 0;
+  color: #c5d7f4;
+}
+
 .metric {
   padding: 14px 16px;
   border-radius: 18px;
@@ -236,6 +269,11 @@ input {
 
   .game-area {
     min-height: 420px;
+  }
+
+  .category-bar {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .status-row {

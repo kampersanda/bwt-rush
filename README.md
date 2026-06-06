@@ -2,7 +2,9 @@
 
 A browser game prototype for string processing fans, built with Vite and TypeScript.
 
-Each displayed token is a source string ending in `$`. The player must type its Burrows-Wheeler transform, not the source string itself.
+Each displayed token is a Burrows-Wheeler transformed string. The player must reconstruct the original word, without typing the terminal `$`.
+
+The prototype also supports category-based runs such as stringology terms, NLP venues, IR venues, and genomics vocabulary.
 
 ## Development
 

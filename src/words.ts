@@ -1,80 +1,124 @@
+export type CategoryId = "stringology" | "nlp" | "ir" | "genomics";
+
 export type WordEntry = {
   text: string;
   source: string;
   bwt: string;
+  answer: string;
   difficulty: number;
+  category: CategoryId;
 };
 
-const RAW_WORDS = [
-  "amber",
-  "arrow",
-  "atlas",
-  "bamboo",
-  "beacon",
-  "binary",
-  "blaze",
-  "bloom",
-  "canyon",
-  "cipher",
-  "comet",
-  "copper",
-  "crystal",
-  "delta",
-  "ember",
-  "falcon",
-  "flux",
-  "forest",
-  "frozen",
-  "galaxy",
-  "glimmer",
-  "harbor",
-  "helium",
-  "horizon",
-  "jungle",
-  "kernel",
-  "legend",
-  "linen",
-  "meteor",
-  "midnight",
-  "nebula",
-  "onyx",
-  "orbit",
-  "petal",
-  "photon",
-  "pixel",
-  "planet",
-  "plasma",
-  "puzzle",
-  "quantum",
-  "quartz",
-  "rally",
-  "rocket",
-  "shadow",
-  "signal",
-  "silver",
-  "spiral",
-  "static",
-  "storm",
-  "summit",
-  "talon",
-  "tunnel",
-  "vector",
-  "velvet",
-  "voyage",
-  "willow",
-  "window",
-  "zenith",
+export type CategoryOption = {
+  id: CategoryId;
+  label: string;
+  description: string;
+};
+
+const CATEGORY_WORDS: Record<CategoryId, string[]> = {
+  stringology: [
+    "suffix",
+    "trie",
+    "automaton",
+    "lcp",
+    "wavelet",
+    "runs",
+    "lyndon",
+    "palindrome",
+    "border",
+    "factor",
+    "substring",
+    "rotation",
+    "grammar",
+    "sampling",
+  ],
+  nlp: [
+    "acl",
+    "emnlp",
+    "naacl",
+    "coling",
+    "eacl",
+    "tacl",
+    "findings",
+    "token",
+    "prompt",
+    "decoder",
+    "encoder",
+    "corpus",
+    "embedding",
+    "attention",
+  ],
+  ir: [
+    "sigir",
+    "cikm",
+    "ecir",
+    "trec",
+    "query",
+    "ranker",
+    "session",
+    "passage",
+    "retrieval",
+    "click",
+    "index",
+    "rerank",
+    "corpus",
+    "snippet",
+  ],
+  genomics: [
+    "genome",
+    "read",
+    "contig",
+    "kmer",
+    "minimizer",
+    "haplotype",
+    "variant",
+    "splice",
+    "transcript",
+    "aligner",
+    "coverage",
+    "assembly",
+    "protein",
+    "adapter",
+  ],
+};
+
+export const CATEGORY_OPTIONS: CategoryOption[] = [
+  {
+    id: "stringology",
+    label: "Stringology",
+    description: "suffix arrays, runs, wavelet trees, and related terms",
+  },
+  {
+    id: "nlp",
+    label: "NLP Venues",
+    description: "ACL-family venues and common NLP terms",
+  },
+  {
+    id: "ir",
+    label: "IR Venues",
+    description: "SIGIR-style conference names and retrieval vocabulary",
+  },
+  {
+    id: "genomics",
+    label: "Genomics",
+    description: "sequence analysis and assembly terminology",
+  },
 ];
 
-export const WORD_BANK: WordEntry[] = RAW_WORDS.map((text) => {
-  const source = `${text}$`;
-  return {
-    text,
-    source,
-    bwt: burrowsWheelerTransform(source),
-    difficulty: scoreDifficulty(text),
-  };
-});
+export const WORD_BANK: WordEntry[] = Object.entries(CATEGORY_WORDS).flatMap(
+  ([category, words]) =>
+    words.map((text) => {
+      const source = `${text}$`;
+      return {
+        text,
+        source,
+        bwt: burrowsWheelerTransform(source),
+        answer: text,
+        difficulty: scoreDifficulty(text),
+        category: category as CategoryId,
+      };
+    }),
+);
 
 function burrowsWheelerTransform(source: string) {
   const rotations = Array.from({ length: source.length }, (_, index) => {

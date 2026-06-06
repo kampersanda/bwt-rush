@@ -1,12 +1,14 @@
 import "./styles.css";
-import { WORD_BANK } from "./words";
+import { CATEGORY_OPTIONS, WORD_BANK, type CategoryId, type WordEntry } from "./words";
 
 type Screen = "title" | "playing" | "gameover";
+type CategoryFilter = CategoryId | "all";
 
 type WordEntity = {
   id: number;
   prompt: string;
   answer: string;
+  category: CategoryId;
   difficulty: number;
   typedIndex: number;
   x: number;
@@ -28,13 +30,18 @@ if (!app) {
   throw new Error("App root not found");
 }
 
+const categoryOptionsMarkup = CATEGORY_OPTIONS.map(
+  (option) =>
+    `<option value="${option.id}">${option.label} - ${option.description}</option>`,
+).join("");
+
 app.innerHTML = `
   <main class="shell">
     <header class="hero">
-      <p class="eyebrow">String Processing Arcade</p>
+      <p class="eyebrow">Inverse BWT Arcade</p>
       <h1>BWT Rush</h1>
       <p class="lede">
-        Each token is a source string ending in $. Type its Burrows-Wheeler transform before it escapes.
+        Each token is a Burrows-Wheeler transformed string. Reconstruct the original word before it escapes.
       </p>
     </header>
 
@@ -49,7 +56,7 @@ app.innerHTML = `
       </div>
       <div class="metric">
         <span class="label">Lives</span>
-        <strong id="lives">6</strong>
+        <strong id="lives">7</strong>
       </div>
       <div class="metric">
         <span class="label">Intensity</span>
@@ -57,30 +64,43 @@ app.innerHTML = `
       </div>
     </section>
 
+    <section class="panel controls-panel">
+      <div class="category-bar">
+        <label for="categorySelect">Category</label>
+        <select id="categorySelect">
+          <option value="all">All categories</option>
+          ${categoryOptionsMarkup}
+        </select>
+      </div>
+      <p id="categoryHint" class="category-hint">
+        Mixed vocabulary. Pick a category if you want more predictable prompts.
+      </p>
+    </section>
+
     <section class="panel game-panel">
       <div id="gameArea" class="game-area" aria-label="Game field"></div>
       <div class="input-bar">
-        <label for="typingInput">BWT</label>
+        <label for="typingInput">Original</label>
         <input
           id="typingInput"
           type="text"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
-          placeholder="Type the BWT result, including $"
+          placeholder="Type the original word without $"
         />
       </div>
       <div class="status-row">
         <p id="statusText" class="status-text">
-          Press Start. Visible strings are prompts, but your input must be their BWT outputs.
+          Press Start. Prompts are BWT strings, but your input should be the original word.
         </p>
         <button id="startButton" class="action-button">Start run</button>
       </div>
     </section>
 
     <section class="panel tips">
-      <p>Rule: the first correct keystroke locks a prompt whose BWT starts with that prefix.</p>
-      <p>Reminder: every displayed string already includes the terminal symbol $.</p>
+      <p>Rule: the first correct keystroke locks a prompt whose original string starts with that prefix.</p>
+      <p>The sentinel $ stays in the prompt. You do not need to type it in your answer.</p>
     </section>
   </main>
 `;
@@ -93,11 +113,15 @@ const gameAreaEl = requiredById("gameArea");
 const inputEl = requiredById<HTMLInputElement>("typingInput");
 const statusEl = requiredById("statusText");
 const startButtonEl = requiredById<HTMLButtonElement>("startButton");
+const categorySelectEl = requiredById<HTMLSelectElement>("categorySelect");
+const categoryHintEl = requiredById("categoryHint");
 
 class TypingGame {
   private readonly area = gameAreaEl;
   private readonly input = inputEl;
   private readonly status = statusEl;
+  private readonly categorySelect = categorySelectEl;
+  private readonly categoryHint = categoryHintEl;
   private readonly scoreboard = {
     score: scoreEl,
     combo: comboEl,
@@ -107,10 +131,11 @@ class TypingGame {
   private readonly words = WORD_BANK;
 
   private screen: Screen = "title";
+  private selectedCategory: CategoryFilter = "all";
   private stats: Stats = {
     score: 0,
     combo: 0,
-    lives: 6,
+    lives: 7,
     elapsedMs: 0,
   };
   private entities: WordEntity[] = [];
@@ -128,6 +153,7 @@ class TypingGame {
         event.preventDefault();
       }
     });
+    this.categorySelect.addEventListener("change", () => this.onCategoryChange());
     startButtonEl.addEventListener("click", () => {
       if (this.screen === "playing") {
         this.restart();
@@ -137,12 +163,13 @@ class TypingGame {
     });
 
     this.renderHud();
+    this.renderCategoryHint();
   }
 
   start() {
     this.restartState();
     this.screen = "playing";
-    this.setStatus("Compute BWTs quickly and keep the lane clean.");
+    this.setStatus("Inverse the BWTs and exploit the category signal.");
     startButtonEl.textContent = "Restart run";
     this.input.disabled = false;
     this.input.focus();
@@ -161,12 +188,12 @@ class TypingGame {
     this.stats = {
       score: 0,
       combo: 0,
-      lives: 6,
+      lives: 7,
       elapsedMs: 0,
     };
     this.entities = [];
     this.activeWordId = null;
-    this.nextSpawnMs = 1400;
+    this.nextSpawnMs = 1550;
     this.spawnCount = 0;
     this.entityId = 0;
     this.input.value = "";
@@ -204,19 +231,20 @@ class TypingGame {
     const intensity = this.currentIntensity();
     const entity: WordEntity = {
       id: this.entityId++,
-      prompt: entry.source,
-      answer: entry.bwt,
+      prompt: entry.bwt,
+      answer: entry.answer,
+      category: entry.category,
       difficulty: entry.difficulty,
       typedIndex: 0,
       x: -180,
       y: 24 + (this.spawnCount % 5) * 62,
-      speed: 44 + intensity * 11 + Math.random() * 10,
-      width: estimateWordWidth(entry.source),
+      speed: 36 + intensity * 9 + Math.random() * 8,
+      width: estimateWordWidth(entry.bwt),
     };
 
     this.spawnCount += 1;
     this.entities.push(entity);
-    if (this.entities.length > 8) {
+    if (this.entities.length > 7) {
       this.entities.sort((a, b) => b.x - a.x);
     }
   }
@@ -236,7 +264,7 @@ class TypingGame {
         }
         this.stats.lives -= 1;
         this.stats.combo = 0;
-        this.setStatus(`Missed ${entity.prompt}. Its BWT was ${entity.answer}.`);
+        this.setStatus(`Missed ${entity.prompt}. Original word: ${entity.answer}.`);
         continue;
       }
 
@@ -267,8 +295,8 @@ class TypingGame {
 
       const prompt = `<span class="prompt">${escapeHtml(entity.prompt)}</span>`;
       const meta = isActive
-        ? `<span class="meta">BWT progress ${progress}</span>`
-        : `<span class="meta">Type BWT(${escapeHtml(entity.prompt)})</span>`;
+        ? `<span class="meta">${labelForCategory(entity.category)} · answer progress ${progress}</span>`
+        : `<span class="meta">${labelForCategory(entity.category)} · invert this BWT</span>`;
 
       wordEl.innerHTML = `${prompt}${meta}`;
       this.area.appendChild(wordEl);
@@ -297,7 +325,7 @@ class TypingGame {
     if (!active) {
       active = this.acquireTarget(typed);
       if (!active) {
-        this.status.textContent = "No visible prompt has a BWT with that prefix.";
+        this.status.textContent = "No visible BWT has an original string with that prefix.";
         return;
       }
       this.activeWordId = active.id;
@@ -325,6 +353,14 @@ class TypingGame {
     this.renderWords();
   }
 
+  private onCategoryChange() {
+    this.selectedCategory = this.categorySelect.value as CategoryFilter;
+    this.renderCategoryHint();
+    if (this.screen === "playing") {
+      this.restart();
+    }
+  }
+
   private acquireTarget(prefix: string) {
     const candidates = this.entities
       .filter((entity) => entity.answer.startsWith(prefix))
@@ -338,7 +374,7 @@ class TypingGame {
       return;
     }
 
-    const bonus = 18 + entity.answer.length * 5 + entity.difficulty * 3 + this.stats.combo * 4;
+    const bonus = 16 + entity.answer.length * 4 + entity.difficulty * 2 + this.stats.combo * 3;
     this.stats.score += bonus;
     this.stats.combo += 1;
     this.activeWordId = null;
@@ -360,18 +396,26 @@ class TypingGame {
   }
 
   private currentIntensity() {
-    return 1 + this.stats.elapsedMs / 45000;
+    return 1 + this.stats.elapsedMs / 60000;
   }
 
   private spawnDelay() {
-    return Math.max(1050, 1950 - this.currentIntensity() * 120);
+    return Math.max(1150, 2100 - this.currentIntensity() * 110);
   }
 
   private pickWord() {
     const intensity = this.currentIntensity();
-    const maxDifficulty = intensity < 1.7 ? 5 : intensity < 2.4 ? 7 : 10;
-    const candidates = this.words.filter((word) => word.difficulty <= maxDifficulty);
+    const maxDifficulty = intensity < 1.7 ? 6 : intensity < 2.4 ? 8 : 11;
+    const pool = this.filteredWords().filter((word) => word.difficulty <= maxDifficulty);
+    const candidates = pool.length > 0 ? pool : this.filteredWords();
     return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  private filteredWords() {
+    if (this.selectedCategory === "all") {
+      return this.words;
+    }
+    return this.words.filter((word) => word.category === this.selectedCategory);
   }
 
   private findActiveWord() {
@@ -388,6 +432,19 @@ class TypingGame {
     this.scoreboard.intensity.textContent = `${this.currentIntensity().toFixed(1)}x`;
   }
 
+  private renderCategoryHint() {
+    if (this.selectedCategory === "all") {
+      this.categoryHint.textContent =
+        "Mixed vocabulary. Pick a category if you want more predictable prompts.";
+      return;
+    }
+
+    const option = CATEGORY_OPTIONS.find((item) => item.id === this.selectedCategory);
+    this.categoryHint.textContent = option
+      ? `${option.label}: ${option.description}.`
+      : "Category selected.";
+  }
+
   private setStatus(message: string) {
     this.status.textContent = message;
   }
@@ -399,6 +456,10 @@ function requiredById<T extends HTMLElement = HTMLElement>(id: string): T {
     throw new Error(`Element #${id} not found`);
   }
   return element as T;
+}
+
+function labelForCategory(category: CategoryId) {
+  return CATEGORY_OPTIONS.find((option) => option.id === category)?.label ?? category;
 }
 
 function estimateWordWidth(text: string) {
@@ -413,5 +474,7 @@ function escapeHtml(text: string) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
+void (WORD_BANK satisfies WordEntry[]);
 
 new TypingGame();
