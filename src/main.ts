@@ -94,7 +94,10 @@ app.innerHTML = `
         <p id="statusText" class="status-text">
           Press Start. Prompts are BWT strings, but your input should be the original word.
         </p>
-        <button id="startButton" class="action-button">Start run</button>
+        <div class="button-row">
+          <button id="startButton" class="action-button">Start run</button>
+          <button id="stopButton" class="secondary-button" disabled>Stop</button>
+        </div>
       </div>
     </section>
 
@@ -113,6 +116,7 @@ const gameAreaEl = requiredById("gameArea");
 const inputEl = requiredById<HTMLInputElement>("typingInput");
 const statusEl = requiredById("statusText");
 const startButtonEl = requiredById<HTMLButtonElement>("startButton");
+const stopButtonEl = requiredById<HTMLButtonElement>("stopButton");
 const categorySelectEl = requiredById<HTMLSelectElement>("categorySelect");
 const categoryHintEl = requiredById("categoryHint");
 
@@ -161,6 +165,7 @@ class TypingGame {
         this.start();
       }
     });
+    stopButtonEl.addEventListener("click", () => this.stop());
 
     this.renderHud();
     this.renderCategoryHint();
@@ -171,6 +176,7 @@ class TypingGame {
     this.screen = "playing";
     this.setStatus("Inverse the BWTs and exploit the category signal.");
     startButtonEl.textContent = "Restart run";
+    stopButtonEl.disabled = false;
     this.input.disabled = false;
     this.input.focus();
     this.lastFrame = performance.now();
@@ -181,6 +187,22 @@ class TypingGame {
     window.cancelAnimationFrame(this.animationFrame);
     this.area.replaceChildren();
     this.start();
+  }
+
+  stop() {
+    if (this.screen !== "playing") {
+      return;
+    }
+
+    this.screen = "title";
+    this.activeWordId = null;
+    this.input.disabled = true;
+    this.input.value = "";
+    stopButtonEl.disabled = true;
+    window.cancelAnimationFrame(this.animationFrame);
+    this.setStatus("Run stopped. Press Start to begin a fresh run.");
+    startButtonEl.textContent = "Start run";
+    this.renderWords();
   }
 
   private restartState() {
@@ -198,6 +220,7 @@ class TypingGame {
     this.entityId = 0;
     this.input.value = "";
     this.renderHud();
+    stopButtonEl.disabled = false;
   }
 
   private tick(now: number) {
@@ -389,6 +412,7 @@ class TypingGame {
     this.screen = "gameover";
     this.input.disabled = true;
     this.activeWordId = null;
+    stopButtonEl.disabled = true;
     window.cancelAnimationFrame(this.animationFrame);
     this.setStatus(`Game over. Final score: ${this.stats.score}.`);
     startButtonEl.textContent = "Play again";

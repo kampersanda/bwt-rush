@@ -233,6 +233,12 @@ input {
   color: #c5d7f4;
 }
 
+.button-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .action-button {
   padding: 12px 18px;
   border: 0;
@@ -241,6 +247,21 @@ input {
   color: #08111f;
   font-weight: 700;
   cursor: pointer;
+}
+
+.secondary-button {
+  padding: 12px 18px;
+  border: 1px solid rgba(164, 204, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(2, 7, 18, 0.55);
+  color: #d9e5fb;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
 .tips {
@@ -281,7 +302,16 @@ input {
     flex-direction: column;
   }
 
+  .button-row {
+    width: 100%;
+    flex-direction: column;
+  }
+
   .action-button {
+    width: 100%;
+  }
+
+  .secondary-button {
     width: 100%;
   }
 }
