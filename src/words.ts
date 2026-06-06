@@ -90,12 +90,12 @@ export const CATEGORY_OPTIONS: CategoryOption[] = [
   },
   {
     id: "nlp",
-    label: "NLP Venues",
+    label: "NLP",
     description: "ACL-family venues and common NLP terms",
   },
   {
     id: "ir",
-    label: "IR Venues",
+    label: "Information Retrieval",
     description: "SIGIR-style conference names and retrieval vocabulary",
   },
   {
@@ -125,7 +125,9 @@ function burrowsWheelerTransform(source: string) {
     return source.slice(index) + source.slice(0, index);
   }).sort();
 
-  return rotations.map((rotation) => rotation[rotation.length - 1] ?? "").join("");
+  return rotations
+    .map((rotation) => rotation[rotation.length - 1] ?? "")
+    .join("");
 }
 
 function scoreDifficulty(text: string) {
