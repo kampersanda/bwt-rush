@@ -121,6 +121,8 @@ const categorySelectEl = requiredById<HTMLSelectElement>("categorySelect");
 const categoryHintEl = requiredById("categoryHint");
 
 class TypingGame {
+  private static readonly RECENT_WORD_LIMIT = 6;
+
   private readonly area = gameAreaEl;
   private readonly input = inputEl;
   private readonly status = statusEl;
@@ -149,6 +151,7 @@ class TypingGame {
   private nextSpawnMs = 0;
   private spawnCount = 0;
   private entityId = 0;
+  private recentAnswers: string[] = [];
 
   constructor() {
     this.input.addEventListener("input", () => this.onInput());
@@ -218,6 +221,7 @@ class TypingGame {
     this.nextSpawnMs = 1550;
     this.spawnCount = 0;
     this.entityId = 0;
+    this.recentAnswers = [];
     this.input.value = "";
     this.renderHud();
     stopButtonEl.disabled = false;
@@ -428,11 +432,31 @@ class TypingGame {
   }
 
   private pickWord() {
-    const intensity = this.currentIntensity();
-    const maxDifficulty = intensity < 1.7 ? 6 : intensity < 2.4 ? 8 : 11;
-    const pool = this.filteredWords().filter((word) => word.difficulty <= maxDifficulty);
-    const candidates = pool.length > 0 ? pool : this.filteredWords();
-    return candidates[Math.floor(Math.random() * candidates.length)];
+    const pool = this.filteredWordsByDifficulty();
+    const recentSet = new Set(this.recentAnswers);
+    const candidates = pool.filter((word) => !recentSet.has(word.answer));
+    const selectionPool = candidates.length > 0 ? candidates : pool;
+    const chosen = selectionPool[Math.floor(Math.random() * selectionPool.length)];
+
+    this.recentAnswers.push(chosen.answer);
+    if (this.recentAnswers.length > TypingGame.RECENT_WORD_LIMIT) {
+      this.recentAnswers.shift();
+    }
+
+    return chosen;
+  }
+
+  private filteredWordsByDifficulty() {
+    const pool = this.filteredWords();
+    const easyThreshold = 9;
+    const allowHardWords = this.currentIntensity() >= 1.8;
+    const easyWords = pool.filter((word) => word.difficulty <= easyThreshold);
+
+    if (allowHardWords || easyWords.length === 0) {
+      return pool;
+    }
+
+    return easyWords;
   }
 
   private filteredWords() {
