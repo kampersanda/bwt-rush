@@ -105,6 +105,16 @@ app.innerHTML = `
       <p>Rule: the first correct keystroke locks a prompt whose original string starts with that prefix.</p>
       <p>The sentinel $ stays in the prompt. You do not need to type it in your answer.</p>
     </section>
+
+    <section class="panel word-list-panel">
+      <div class="word-list-header">
+        <h2>Word List</h2>
+        <p id="wordListHint" class="word-list-hint">
+          Showing every possible prompt for the current category.
+        </p>
+      </div>
+      <div id="wordList" class="word-list" aria-label="Word list"></div>
+    </section>
   </main>
 `;
 
@@ -119,6 +129,8 @@ const startButtonEl = requiredById<HTMLButtonElement>("startButton");
 const stopButtonEl = requiredById<HTMLButtonElement>("stopButton");
 const categorySelectEl = requiredById<HTMLSelectElement>("categorySelect");
 const categoryHintEl = requiredById("categoryHint");
+const wordListEl = requiredById("wordList");
+const wordListHintEl = requiredById("wordListHint");
 
 class TypingGame {
   private static readonly RECENT_WORD_LIMIT = 6;
@@ -128,6 +140,8 @@ class TypingGame {
   private readonly status = statusEl;
   private readonly categorySelect = categorySelectEl;
   private readonly categoryHint = categoryHintEl;
+  private readonly wordList = wordListEl;
+  private readonly wordListHint = wordListHintEl;
   private readonly scoreboard = {
     score: scoreEl,
     combo: comboEl,
@@ -172,6 +186,7 @@ class TypingGame {
 
     this.renderHud();
     this.renderCategoryHint();
+    this.renderWordList();
   }
 
   start() {
@@ -383,6 +398,7 @@ class TypingGame {
   private onCategoryChange() {
     this.selectedCategory = this.categorySelect.value as CategoryFilter;
     this.renderCategoryHint();
+    this.renderWordList();
     if (this.screen === "playing") {
       this.restart();
     }
@@ -491,6 +507,33 @@ class TypingGame {
     this.categoryHint.textContent = option
       ? `${option.label}: ${option.description}.`
       : "Category selected.";
+  }
+
+  private renderWordList() {
+    const words = this.filteredWords()
+      .slice()
+      .sort((a, b) => a.answer.localeCompare(b.answer));
+
+    this.wordList.replaceChildren();
+
+    for (const word of words) {
+      const item = document.createElement("article");
+      item.className = "word-list-item";
+      item.innerHTML = `
+        <strong>${escapeHtml(word.answer)}</strong>
+        <span>${escapeHtml(word.bwt)}</span>
+      `;
+      this.wordList.appendChild(item);
+    }
+
+    if (this.selectedCategory === "all") {
+      this.wordListHint.textContent = `Showing all ${words.length} prompts across every category.`;
+      return;
+    }
+
+    const option = CATEGORY_OPTIONS.find((entry) => entry.id === this.selectedCategory);
+    const label = option?.label ?? "Selected";
+    this.wordListHint.textContent = `Showing ${words.length} prompts for ${label}.`;
   }
 
   private setStatus(message: string) {
