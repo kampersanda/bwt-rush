@@ -1,0 +1,371 @@
+:root {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  color: #f5f7ff;
+  background:
+    radial-gradient(circle at top, rgba(84, 130, 255, 0.35), transparent 36%),
+    linear-gradient(160deg, #09111f 0%, #10233f 42%, #1f2843 100%);
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.shell {
+  width: min(1080px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.hero {
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8bc5ff;
+  font-size: 0.78rem;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  line-height: 0.95;
+}
+
+.lede {
+  width: min(40rem, 100%);
+  margin: 12px 0 0;
+  color: #d3def8;
+}
+
+.panel {
+  border: 1px solid rgba(167, 198, 255, 0.2);
+  border-radius: 24px;
+  background: rgba(8, 16, 31, 0.72);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.hud {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.controls-panel {
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.category-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.category-bar label {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  color: #97b4df;
+}
+
+.category-bar select {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(164, 204, 255, 0.22);
+  background: rgba(2, 7, 18, 0.7);
+  color: inherit;
+}
+
+.category-hint {
+  margin: 12px 0 0;
+  color: #c5d7f4;
+}
+
+.metric {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(133, 181, 255, 0.08);
+}
+
+.label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #99b7ea;
+  margin-bottom: 6px;
+}
+
+.metric strong {
+  font-size: 1.6rem;
+}
+
+.game-panel {
+  padding: 18px;
+}
+
+.game-area {
+  position: relative;
+  overflow: hidden;
+  min-height: 356px;
+  border-radius: 20px;
+  border: 1px solid rgba(149, 194, 255, 0.18);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(18, 46, 90, 0.92), rgba(12, 24, 44, 0.95));
+  background-size: 100% 54px, 72px 100%, 100% 100%;
+}
+
+.game-area::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 140px;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, rgba(255, 95, 95, 0.85), transparent);
+}
+
+.word {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  left: 0;
+  top: 0;
+  padding: 10px 14px 11px;
+  border-radius: 18px;
+  background: rgba(248, 250, 255, 0.1);
+  border: 1px solid rgba(208, 225, 255, 0.28);
+  color: #f4f8ff;
+  font-size: 1.15rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.prompt {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.meta {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a6c3ee;
+}
+
+.word.active {
+  border-color: rgba(255, 232, 129, 0.82);
+  box-shadow: 0 0 0 3px rgba(255, 232, 129, 0.15);
+}
+
+.word.danger {
+  border-color: rgba(255, 109, 109, 0.75);
+}
+
+.typed {
+  color: #6de3bf;
+}
+
+.input-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.input-bar label {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  color: #97b4df;
+}
+
+.input-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(164, 204, 255, 0.22);
+  background: rgba(2, 7, 18, 0.55);
+  color: inherit;
+}
+
+.input-bar input:focus {
+  outline: 2px solid rgba(111, 205, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.status-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.status-text {
+  margin: 0;
+  color: #c5d7f4;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.action-button {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #92f7d4, #7eb6ff);
+  color: #08111f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button {
+  padding: 12px 18px;
+  border: 1px solid rgba(164, 204, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(2, 7, 18, 0.55);
+  color: #d9e5fb;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.tips {
+  margin-top: 18px;
+  padding: 18px;
+  color: #c3d3ef;
+}
+
+.tips p {
+  margin: 0;
+}
+
+.tips p + p {
+  margin-top: 8px;
+}
+
+.word-list-panel {
+  margin-top: 18px;
+  padding: 18px;
+}
+
+.word-list-header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.word-list-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.word-list-hint {
+  margin: 0;
+  color: #c5d7f4;
+}
+
+.word-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.word-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(133, 181, 255, 0.08);
+  border: 1px solid rgba(167, 198, 255, 0.14);
+}
+
+.word-list-item strong {
+  font-size: 0.98rem;
+}
+
+.word-list-item span {
+  color: #9fc0ef;
+  font-size: 0.82rem;
+  word-break: break-all;
+}
+
+@media (max-width: 720px) {
+  .shell {
+    width: min(100vw - 20px, 1080px);
+    padding-top: 20px;
+  }
+
+  .hud {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .game-area {
+    min-height: 420px;
+  }
+
+  .category-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .status-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .word-list-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .button-row {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+
+  .secondary-button {
+    width: 100%;
+  }
+}
