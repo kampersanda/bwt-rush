@@ -1,4 +1,4 @@
-export type CategoryId = "stringology" | "nlp" | "ir" | "genomics";
+export type CategoryId = "stringology" | "nlp" | "ir" | "genomics" | "countries";
 
 export type WordEntry = {
   text: string;
@@ -171,6 +171,53 @@ const CATEGORY_WORDS: Record<CategoryId, string[]> = {
     "annotation",
     "ortholog",
   ],
+  countries: [
+    "argentina",
+    "australia",
+    "brazil",
+    "canada",
+    "chile",
+    "china",
+    "colombia",
+    "denmark",
+    "egypt",
+    "ethiopia",
+    "finland",
+    "france",
+    "germany",
+    "ghana",
+    "greece",
+    "hungary",
+    "india",
+    "indonesia",
+    "ireland",
+    "italy",
+    "japan",
+    "kenya",
+    "malaysia",
+    "mexico",
+    "morocco",
+    "netherlands",
+    "nigeria",
+    "norway",
+    "pakistan",
+    "peru",
+    "philippines",
+    "poland",
+    "portugal",
+    "romania",
+    "singapore",
+    "southafrica",
+    "spain",
+    "sweden",
+    "switzerland",
+    "thailand",
+    "turkiye",
+    "ukraine",
+    "unitedkingdom",
+    "unitedstates",
+    "vietnam",
+  ],
 };
 
 export const CATEGORY_OPTIONS: CategoryOption[] = [
@@ -193,6 +240,11 @@ export const CATEGORY_OPTIONS: CategoryOption[] = [
     id: "genomics",
     label: "Genomics",
     description: "sequence analysis and assembly terminology",
+  },
+  {
+    id: "countries",
+    label: "Countries",
+    description: "country names from around the world",
   },
 ];
 
