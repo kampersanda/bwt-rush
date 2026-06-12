@@ -68,12 +68,12 @@ app.innerHTML = `
       <div class="category-bar">
         <label for="categorySelect">Category</label>
         <select id="categorySelect">
-          <option value="all">All categories</option>
           ${categoryOptionsMarkup}
+          <option value="all">All categories</option>
         </select>
       </div>
       <p id="categoryHint" class="category-hint">
-        Mixed vocabulary. Pick a category if you want more predictable prompts.
+        Easy Words: short, familiar English words for elementary-level players.
       </p>
     </section>
 
@@ -151,7 +151,7 @@ class TypingGame {
   private readonly words = WORD_BANK;
 
   private screen: Screen = "title";
-  private selectedCategory: CategoryFilter = "all";
+  private selectedCategory: CategoryFilter = "easy";
   private stats: Stats = {
     score: 0,
     combo: 0,
@@ -168,6 +168,7 @@ class TypingGame {
   private recentAnswers: string[] = [];
 
   constructor() {
+    this.categorySelect.value = this.selectedCategory;
     this.input.addEventListener("input", () => this.onInput());
     this.input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {

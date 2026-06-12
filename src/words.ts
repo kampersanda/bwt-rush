@@ -264,6 +264,11 @@ const CATEGORY_WORDS: Record<CategoryId, string[]> = {
 
 export const CATEGORY_OPTIONS: CategoryOption[] = [
   {
+    id: "easy",
+    label: "Easy Words",
+    description: "short, familiar English words for elementary-level players",
+  },
+  {
     id: "stringology",
     label: "Stringology",
     description: "suffix arrays, runs, wavelet trees, and related terms",
@@ -287,11 +292,6 @@ export const CATEGORY_OPTIONS: CategoryOption[] = [
     id: "countries",
     label: "Countries",
     description: "country names from around the world",
-  },
-  {
-    id: "easy",
-    label: "Easy Words",
-    description: "short, familiar English words for elementary-level players",
   },
 ];
 
