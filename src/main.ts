@@ -45,6 +45,19 @@ app.innerHTML = `
       </p>
     </header>
 
+    <section class="panel controls-panel">
+      <div class="category-bar">
+        <label for="categorySelect">Category</label>
+        <select id="categorySelect">
+          ${categoryOptionsMarkup}
+          <option value="all">All categories</option>
+        </select>
+      </div>
+      <p id="categoryHint" class="category-hint">
+        Easy Words: short, familiar English words for elementary-level players.
+      </p>
+    </section>
+
     <section class="panel hud">
       <div class="metric">
         <span class="label">Score</span>
@@ -62,19 +75,6 @@ app.innerHTML = `
         <span class="label">Intensity</span>
         <strong id="intensity">1.0x</strong>
       </div>
-    </section>
-
-    <section class="panel controls-panel">
-      <div class="category-bar">
-        <label for="categorySelect">Category</label>
-        <select id="categorySelect">
-          ${categoryOptionsMarkup}
-          <option value="all">All categories</option>
-        </select>
-      </div>
-      <p id="categoryHint" class="category-hint">
-        Easy Words: short, familiar English words for elementary-level players.
-      </p>
     </section>
 
     <section class="panel game-panel">
