@@ -441,7 +441,7 @@ class TypingGame {
   }
 
   private currentIntensity() {
-    return 1 + this.stats.elapsedMs / 60000;
+    return 1 + this.stats.elapsedMs / 90000;
   }
 
   private spawnDelay() {
