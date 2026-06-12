@@ -1,4 +1,10 @@
-export type CategoryId = "stringology" | "nlp" | "ir" | "genomics" | "countries" | "easy";
+export type CategoryId =
+  | "stringology"
+  | "nlp"
+  | "ir"
+  | "genomics"
+  | "countries"
+  | "easy";
 
 export type WordEntry = {
   text: string;

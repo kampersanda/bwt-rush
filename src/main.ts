@@ -1,5 +1,10 @@
 import "./styles.css";
-import { CATEGORY_OPTIONS, WORD_BANK, type CategoryId, type WordEntry } from "./words";
+import {
+  CATEGORY_OPTIONS,
+  WORD_BANK,
+  type CategoryId,
+  type WordEntry,
+} from "./words";
 
 type Screen = "title" | "playing" | "gameover";
 type CategoryFilter = CategoryId | "all";
@@ -39,7 +44,7 @@ app.innerHTML = `
   <main class="shell">
     <header class="hero">
       <p class="eyebrow">Inverse BWT Arcade</p>
-      <h1>BWT Rush</h1>
+      <h1>BWT Rush!</h1>
       <p class="lede">
         Each token is a Burrows-Wheeler transformed string. Reconstruct the original word before it escapes.
       </p>
@@ -179,7 +184,9 @@ class TypingGame {
         event.preventDefault();
       }
     });
-    this.categorySelect.addEventListener("change", () => this.onCategoryChange());
+    this.categorySelect.addEventListener("change", () =>
+      this.onCategoryChange(),
+    );
     startButtonEl.addEventListener("click", () => {
       if (this.screen === "playing") {
         this.restart();
@@ -203,7 +210,9 @@ class TypingGame {
     this.input.disabled = false;
     this.input.focus();
     this.lastFrame = performance.now();
-    this.animationFrame = window.requestAnimationFrame((time) => this.tick(time));
+    this.animationFrame = window.requestAnimationFrame((time) =>
+      this.tick(time),
+    );
   }
 
   restart() {
@@ -270,7 +279,9 @@ class TypingGame {
       return;
     }
 
-    this.animationFrame = window.requestAnimationFrame((time) => this.tick(time));
+    this.animationFrame = window.requestAnimationFrame((time) =>
+      this.tick(time),
+    );
   }
 
   private spawnWord() {
@@ -311,7 +322,9 @@ class TypingGame {
         }
         this.stats.lives -= 1;
         this.stats.combo = 0;
-        this.setStatus(`Missed ${entity.prompt}. Original word: ${entity.answer}.`);
+        this.setStatus(
+          `Missed ${entity.prompt}. Original word: ${entity.answer}.`,
+        );
         continue;
       }
 
@@ -372,7 +385,8 @@ class TypingGame {
     if (!active) {
       active = this.acquireTarget(typed);
       if (!active) {
-        this.status.textContent = "No visible BWT has an original string with that prefix.";
+        this.status.textContent =
+          "No visible BWT has an original string with that prefix.";
         return;
       }
       this.activeWordId = active.id;
@@ -422,13 +436,19 @@ class TypingGame {
       return;
     }
 
-    const bonus = 16 + entity.answer.length * 4 + entity.difficulty * 2 + this.stats.combo * 3;
+    const bonus =
+      16 +
+      entity.answer.length * 4 +
+      entity.difficulty * 2 +
+      this.stats.combo * 3;
     this.stats.score += bonus;
     this.stats.combo += 1;
     this.activeWordId = null;
     this.input.value = "";
     this.entities = this.entities.filter((item) => item.id !== id);
-    this.setStatus(`Cleared ${entity.prompt} -> ${entity.answer} for ${bonus} points.`);
+    this.setStatus(
+      `Cleared ${entity.prompt} -> ${entity.answer} for ${bonus} points.`,
+    );
     this.renderHud();
     this.renderWords();
   }
@@ -457,7 +477,8 @@ class TypingGame {
     const recentSet = new Set(this.recentAnswers);
     const candidates = pool.filter((word) => !recentSet.has(word.answer));
     const selectionPool = candidates.length > 0 ? candidates : pool;
-    const chosen = selectionPool[Math.floor(Math.random() * selectionPool.length)];
+    const chosen =
+      selectionPool[Math.floor(Math.random() * selectionPool.length)];
 
     this.recentAnswers.push(chosen.answer);
     if (this.recentAnswers.length > TypingGame.RECENT_WORD_LIMIT) {
@@ -491,7 +512,9 @@ class TypingGame {
     if (this.activeWordId === null) {
       return null;
     }
-    return this.entities.find((entity) => entity.id === this.activeWordId) ?? null;
+    return (
+      this.entities.find((entity) => entity.id === this.activeWordId) ?? null
+    );
   }
 
   private renderHud() {
@@ -508,7 +531,9 @@ class TypingGame {
       return;
     }
 
-    const option = CATEGORY_OPTIONS.find((item) => item.id === this.selectedCategory);
+    const option = CATEGORY_OPTIONS.find(
+      (item) => item.id === this.selectedCategory,
+    );
     this.categoryHint.textContent = option
       ? `${option.label}: ${option.description}.`
       : "Category selected.";
@@ -536,7 +561,9 @@ class TypingGame {
       return;
     }
 
-    const option = CATEGORY_OPTIONS.find((entry) => entry.id === this.selectedCategory);
+    const option = CATEGORY_OPTIONS.find(
+      (entry) => entry.id === this.selectedCategory,
+    );
     const label = option?.label ?? "Selected";
     this.wordListHint.textContent = `Showing ${words.length} prompts for ${label}.`;
   }
@@ -555,7 +582,9 @@ function requiredById<T extends HTMLElement = HTMLElement>(id: string): T {
 }
 
 function labelForCategory(category: CategoryId) {
-  return CATEGORY_OPTIONS.find((option) => option.id === category)?.label ?? category;
+  return (
+    CATEGORY_OPTIONS.find((option) => option.id === category)?.label ?? category
+  );
 }
 
 function estimateWordWidth(text: string) {
