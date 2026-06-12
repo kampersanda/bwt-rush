@@ -115,6 +115,10 @@ app.innerHTML = `
       </div>
       <div id="wordList" class="word-list" aria-label="Word list"></div>
     </section>
+
+    <footer class="site-footer">
+      <p>Copyright © kampersanda</p>
+    </footer>
   </main>
 `;
 
