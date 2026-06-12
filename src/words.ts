@@ -1,4 +1,4 @@
-export type CategoryId = "stringology" | "nlp" | "ir" | "genomics" | "countries";
+export type CategoryId = "stringology" | "nlp" | "ir" | "genomics" | "countries" | "easy";
 
 export type WordEntry = {
   text: string;
@@ -218,6 +218,48 @@ const CATEGORY_WORDS: Record<CategoryId, string[]> = {
     "unitedstates",
     "vietnam",
   ],
+  easy: [
+    "apple",
+    "banana",
+    "cat",
+    "dog",
+    "bird",
+    "fish",
+    "book",
+    "pen",
+    "pencil",
+    "bag",
+    "box",
+    "chair",
+    "table",
+    "house",
+    "water",
+    "milk",
+    "bread",
+    "rice",
+    "cake",
+    "pizza",
+    "grape",
+    "lemon",
+    "melon",
+    "peach",
+    "happy",
+    "smile",
+    "sun",
+    "moon",
+    "star",
+    "rain",
+    "cloud",
+    "green",
+    "blue",
+    "red",
+    "yellow",
+    "train",
+    "plane",
+    "music",
+    "dance",
+    "game",
+  ],
 };
 
 export const CATEGORY_OPTIONS: CategoryOption[] = [
@@ -245,6 +287,11 @@ export const CATEGORY_OPTIONS: CategoryOption[] = [
     id: "countries",
     label: "Countries",
     description: "country names from around the world",
+  },
+  {
+    id: "easy",
+    label: "Easy Words",
+    description: "short, familiar English words for elementary-level players",
   },
 ];
 
