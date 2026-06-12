@@ -327,6 +327,19 @@ input {
   word-break: break-all;
 }
 
+.site-footer {
+  margin-top: 18px;
+  text-align: center;
+  color: #97b4df;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
 @media (max-width: 720px) {
   .shell {
     width: min(100vw - 20px, 1080px);

@@ -1,4 +1,4 @@
-# bwt-rush
+# BWT Rush!
 
 A browser game for string processing fans, built with Vite and TypeScript.
 
@@ -6,7 +6,7 @@ Each displayed token is a Burrows-Wheeler transformed string. The player must re
 
 This game supports category-based runs such as easy everyday words, stringology terms, NLP vocabulary, IR vocabulary, and genomics vocabulary.
 
-This game was developed with assistance from OpenAI Codex.
+This program was developed with assistance from OpenAI Codex.
 
 ## Development
 
